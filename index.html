@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Foundation Guard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Matter.js Physics Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="ui-overlay">
+            <div id="top-bar">
+                <div class="stat-box">
+                    <span class="label">MAZE INTEGRITY</span>
+                    <div class="progress-container">
+                        <div id="maze-health-bar" class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <span id="maze-health-text">100%</span>
+                </div>
+                
+                <div class="stat-box">
+                    <span class="label">INSURANCE STRIKES</span>
+                    <div id="strikes-container">
+                        <div class="strike"></div>
+                        <div class="strike"></div>
+                        <div class="strike"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-box">
+                    <span class="label">LEVEL</span>
+                    <span id="level-display">1 / 10</span>
+                </div>
+            </div>
+
+            <div id="player-status">
+                <div class="health-container">
+                    <div id="player-health-bar" class="progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Mobile Touch Controls -->
+            <div id="mobile-controls" class="hidden">
+                <div class="dpad">
+                    <button id="btn-left" class="joy-btn">◀</button>
+                    <button id="btn-right" class="joy-btn">▶</button>
+                </div>
+                <div class="actions">
+                    <button id="btn-jump" class="joy-btn">JUMP</button>
+                    <button id="btn-punch" class="joy-btn punch">P</button>
+                    <button id="btn-kick" class="joy-btn kick">K</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-container" class="hidden">
+            <div id="game-modal">
+                <h1 id="modal-title">TERMINATION NOTICE</h1>
+                <p id="modal-message">You have failed to protect the foundation. Your contract is terminated.</p>
+                <button id="modal-action">RETRY</button>
+            </div>
+        </div>
+        
+        <div id="senior-contractor-unlock" class="hidden">
+            <h2>UNLOCKED: SENIOR CONTRACTOR MODE</h2>
+            <p>The hard way begins.</p>
+        </div>
+    </div>
+
+    <!-- Core Engine via Vite -->
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
