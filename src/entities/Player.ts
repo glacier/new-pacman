@@ -26,7 +26,7 @@ export class Player {
                 fillStyle: 'transparent',
                 strokeStyle: 'transparent',
                 sprite: {
-                    texture: '/character.png',
+                    texture: `${import.meta.env.BASE_URL}character.png`,
                     xScale: 0.1,
                     yScale: 0.1
                 }

@@ -32,7 +32,7 @@ export class Monster {
                 fillStyle: 'transparent',
                 strokeStyle: 'transparent',
                 sprite: {
-                    texture: '/monster.png',
+                    texture: `${import.meta.env.BASE_URL}monster.png`,
                     xScale: 0.08,
                     yScale: 0.08
                 }

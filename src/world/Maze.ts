@@ -108,7 +108,7 @@ export class Maze {
                             fillStyle: 'transparent',
                             strokeStyle: 'transparent',
                             sprite: {
-                                texture: '/brick.png',
+                                texture: `${import.meta.env.BASE_URL}brick.png`,
                                 xScale: 0.0625,
                                 yScale: 0.0625
                             }
