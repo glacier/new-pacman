@@ -1,5 +1,6 @@
 import { Body, Vector } from 'matter-js';
 import { physics } from '../engine/physics';
+import { sound } from '../audio/SoundManager';
 import { Maze } from '../world/Maze';
 
 export class Monster {
@@ -17,42 +18,43 @@ export class Monster {
     private direction: { x: number, y: number } = { x: 0, y: 0 };
     private changeDirectionTimer: number = 0;
     private attackCooldown: number = 0;
+    private smashSoundCooldown: number = 0;
 
     constructor(x: number, y: number, maze: Maze, level: number) {
         this.maze = maze;
         this.level = level;
         this.body = physics.addDynamicBody(x, y, 32, 32, {
-            friction: 0.1,    // Added some friction to help with "squeezing"
+            friction: 0.1,
             frictionAir: 0.1,
             inertia: Infinity,
             label: 'monster',
-            render: { 
+            render: {
                 fillStyle: 'transparent',
                 strokeStyle: 'transparent',
                 sprite: {
                     texture: '/monster.png',
-                    xScale: 0.08, 
+                    xScale: 0.08,
                     yScale: 0.08
                 }
             }
         } as Matter.IChamferableBodyDefinition);
-        
+
         this.pickRandomDirection();
     }
 
     update() {
         if (this.isDead) return;
 
-        // Reset isTouchingWall each frame
         this.isTouchingWall = false;
-        
-        // Simple wall proximity check for squeezing
+
         this.maze.walls.forEach(wall => {
             const dist = Vector.magnitude(Vector.sub(this.body.position, wall.position));
-            if (dist < 40) { // Monster size is 32x32, walls are 40x40
+            if (dist < 40) {
                 this.isTouchingWall = true;
             }
         });
+
+        if (this.smashSoundCooldown > 0) this.smashSoundCooldown--;
 
         if (this.isInterrupted) {
             this.interruptTimer--;
@@ -63,7 +65,6 @@ export class Monster {
         if (this.state === 'SMASHING') {
             if (this.targetWall) {
                 this.smash();
-                // Randomly stop smashing and wander
                 if (Math.random() < 0.01) this.state = 'WANDERING';
             } else {
                 this.state = 'WANDERING';
@@ -73,22 +74,20 @@ export class Monster {
 
         if (this.state === 'WANDERING') {
             this.move();
-            
-            // Occasionally look for a wall to smash
+
             if (Math.random() < 0.005) {
                 this.findNearestWall();
                 if (this.targetWall && Vector.magnitude(Vector.sub(this.body.position, this.targetWall.position)) < 50) {
                     this.state = 'SMASHING';
                 }
             }
-            
+
             this.changeDirectionTimer--;
             if (this.changeDirectionTimer <= 0 || this.checkWallCollision()) {
                 this.pickRandomDirection();
             }
         }
 
-        // --- NEW: Player Attack Logic ---
         this.checkPlayerAttack();
     }
 
@@ -98,35 +97,26 @@ export class Monster {
             return;
         }
 
-        // Find the player body via label
         const playerBody = physics.engine.world.bodies.find(b => b.label === 'player');
         if (playerBody) {
             const diff = Vector.sub(playerBody.position, this.body.position);
             const dist = Vector.magnitude(diff);
 
-            if (dist < 45) { // Close enough to "punch/kick"
-                // Trigger event or direct damage if we had a reference
-                // For simplicity, we'll rely on the player checking proximity or using a custom event
-                // But better: apply a "lunge" force and the player class can handle damage on collision
-                
+            if (dist < 45) {
                 const forceMagnitude = 0.02;
                 const force = Vector.mult(Vector.normalise(diff), forceMagnitude);
                 Body.applyForce(playerBody, playerBody.position, force);
-                
-                // Set a custom property on the player body to signal damage, 
-                // or let the Player class check proximity to monsters (already does for squeezing)
-                (playerBody as any).incomingDamage = 5; 
-                
-                this.attackCooldown = 60; // 1 second cooldown
-                console.log("Monster Attacked Player!");
+
+                (playerBody as any).incomingDamage = 5;
+                this.attackCooldown = 60;
             }
         }
     }
 
     private move() {
-        Body.setVelocity(this.body, { 
-            x: this.direction.x * this.speed, 
-            y: this.direction.y * this.speed 
+        Body.setVelocity(this.body, {
+            x: this.direction.x * this.speed,
+            y: this.direction.y * this.speed
         });
     }
 
@@ -140,7 +130,6 @@ export class Monster {
     }
 
     private checkWallCollision() {
-        // Simple check: if velocity is very low but direction is set, we probably hit a wall
         const speed = Vector.magnitude(this.body.velocity);
         return speed < 0.1 && (this.direction.x !== 0 || this.direction.y !== 0);
     }
@@ -161,11 +150,15 @@ export class Monster {
     }
 
     smash() {
-        // Scale damage by level: more damage at higher levels
         const baseDamage = 0.0014;
-        const levelMultiplier = 1 + (this.level - 1) * 0.5; // +50% per level
+        const levelMultiplier = 1 + (this.level - 1) * 0.5;
         this.maze.damageWall(this.targetWall!, baseDamage * levelMultiplier);
-        Body.setVelocity(this.body, { x: 0, y: 0 }); // Stay still while smashing
+        Body.setVelocity(this.body, { x: 0, y: 0 });
+
+        if (this.smashSoundCooldown <= 0) {
+            sound.play('wallSmash');
+            this.smashSoundCooldown = 30;
+        }
     }
 
     takeDamage(amount: number) {
@@ -180,12 +173,11 @@ export class Monster {
         this.isDead = true;
         this.state = 'IDLE';
         physics.removeBody(this.body);
-        console.log("Monster Died!");
     }
 
     interrupt() {
         this.isInterrupted = true;
-        this.interruptTimer = 60; 
+        this.interruptTimer = 60;
         this.state = 'WANDERING';
         this.pickRandomDirection();
     }

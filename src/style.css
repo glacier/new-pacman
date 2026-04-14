@@ -185,6 +185,95 @@ body {
     transform: scale(1.05);
 }
 
+/* Pause Overlay */
+#pause-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+}
+
+#pause-modal {
+    background: var(--industrial-gray);
+    padding: 40px;
+    border: 2px solid var(--neon-orange);
+    text-align: center;
+    max-width: 350px;
+    box-shadow: 0 0 40px rgba(255, 153, 0, 0.3);
+}
+
+#pause-modal h1 {
+    color: var(--neon-orange);
+    font-size: 28px;
+    margin-bottom: 30px;
+    letter-spacing: 6px;
+}
+
+.modal-btn {
+    background: var(--industrial-gray);
+    color: white;
+    border: 2px solid var(--neon-orange);
+    padding: 12px 30px;
+    font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    cursor: pointer;
+    transition: 0.2s;
+    letter-spacing: 2px;
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.modal-btn:hover {
+    background: var(--neon-orange);
+    color: var(--bg-dark);
+}
+
+.modal-btn:last-child {
+    margin-bottom: 0;
+}
+
+/* HUD Buttons (Mute + Pause) */
+#hud-buttons {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.hud-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--glass-bg);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: var(--text-silver);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    transition: 0.2s;
+    padding: 0;
+}
+
+.hud-btn:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.hud-btn.muted {
+    opacity: 0.4;
+}
+
 /* Mobile Controls */
 #mobile-controls {
     position: absolute;
@@ -192,21 +281,36 @@ body {
     width: calc(100% - 40px);
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
     pointer-events: auto;
 }
 
-.dpad, .actions {
+.dpad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.dpad-row {
+    display: flex;
+    gap: 6px;
+}
+
+.actions {
     display: flex;
     gap: 15px;
+    align-items: flex-end;
 }
 
 .joy-btn {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     background: var(--glass-bg);
     border: 2px solid var(--industrial-gray);
     border-radius: 50%;
     color: white;
+    font-size: 18px;
     font-weight: bold;
     display: flex;
     justify-content: center;
@@ -215,6 +319,7 @@ body {
     touch-action: manipulation;
     backdrop-filter: blur(5px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    -webkit-tap-highlight-color: transparent;
 }
 
 .joy-btn:active {
@@ -222,8 +327,20 @@ body {
     transform: scale(0.9);
 }
 
-.joy-btn.punch { border-color: #ffd700; color: #ffd700; }
-.joy-btn.kick { border-color: #ff4500; color: #ff4500; }
+.joy-btn.punch {
+    border-color: #ffd700;
+    color: #ffd700;
+    width: 70px;
+    height: 70px;
+    font-size: 20px;
+}
+.joy-btn.kick {
+    border-color: #ff4500;
+    color: #ff4500;
+    width: 70px;
+    height: 70px;
+    font-size: 20px;
+}
 
 .hidden {
     display: none !important;
@@ -233,7 +350,48 @@ body {
 @media (max-width: 960px) {
     #game-container {
         width: 100vw;
-        height: 100vh;
+        height: auto;
+        aspect-ratio: 960 / 640;
+        max-height: 100vh;
         border: none;
+    }
+}
+
+@media (max-height: 640px) and (max-width: 960px) {
+    #game-container {
+        height: 100vh;
+        width: auto;
+        aspect-ratio: 960 / 640;
+        max-width: 100vw;
+    }
+}
+
+@media (max-width: 600px) {
+    .joy-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+    }
+    .joy-btn.punch, .joy-btn.kick {
+        width: 60px;
+        height: 60px;
+        font-size: 18px;
+    }
+    #top-bar {
+        padding: 8px 12px;
+    }
+    .label {
+        font-size: 8px;
+    }
+    .progress-container {
+        width: 120px;
+        height: 10px;
+    }
+    #level-display {
+        font-size: 14px;
+    }
+    .strike {
+        width: 14px;
+        height: 14px;
     }
 }
