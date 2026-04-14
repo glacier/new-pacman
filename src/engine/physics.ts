@@ -30,7 +30,7 @@ export class PhysicsSetup {
         Runner.run(this.runner, this.engine);
 
         // Ensure transparency and set background programmatically
-        canvas.style.background = 'url("/grass.png")';
+        canvas.style.background = `url("${import.meta.env.BASE_URL}grass.png")`;
         canvas.style.backgroundSize = '64px 64px';
         canvas.style.backgroundRepeat = 'repeat';
         canvas.style.backgroundColor = '#228b22'; // Fallback
