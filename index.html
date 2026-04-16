@@ -8,11 +8,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 </head>
 <body>
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
-        
-        <div id="ui-overlay">
-            <div id="top-bar">
+    <div id="app-container">
+        <div id="ui-layout">
+            <div id="ui-overlay">
+                <div id="top-bar">
                 <div class="stat-box">
                     <span class="label">MAZE INTEGRITY</span>
                     <div class="progress-container">
@@ -65,8 +64,12 @@
             </div>
         </div>
 
-        <div id="pause-overlay" class="hidden">
-            <div id="pause-modal">
+        <div id="game-wrapper">
+            <div id="game-container">
+                <canvas id="gameCanvas"></canvas>
+
+                <div id="pause-overlay" class="hidden">
+                    <div id="pause-modal">
                 <h1>PAUSED</h1>
                 <button id="resume-btn" class="modal-btn">RESUME</button>
                 <button id="quit-btn" class="modal-btn">QUIT</button>
@@ -81,9 +84,11 @@
             </div>
         </div>
         
-        <div id="senior-contractor-unlock" class="hidden">
-            <h2>UNLOCKED: SENIOR CONTRACTOR MODE</h2>
-            <p>The hard way begins.</p>
+                <div id="senior-contractor-unlock" class="hidden">
+                    <h2>UNLOCKED: SENIOR CONTRACTOR MODE</h2>
+                    <p>The hard way begins.</p>
+                </div>
+            </div>
         </div>
     </div>
 
