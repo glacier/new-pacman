@@ -123,7 +123,7 @@ class GameEngine {
         if (btnMute) btnMute.addEventListener('click', () => {
             sound.toggle();
             btnMute.classList.toggle('muted', sound.muted);
-            btnMute.innerHTML = sound.muted ? '&#x1f507;' : '&#x1f50a;';
+            btnMute.textContent = sound.muted ? '\u{1F507}' : '\u{1F50A}';
         });
 
         // Resume / quit in pause menu
