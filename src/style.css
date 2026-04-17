@@ -398,3 +398,74 @@ body {
         height: 14px;
     }
 }
+
+@media (orientation: landscape) and (max-height: 600px) {
+    #app-container {
+        flex-direction: row;
+    }
+
+    #ui-layout {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        pointer-events: none;
+        background: transparent;
+    }
+
+    #ui-overlay {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        pointer-events: none;
+    }
+
+    #top-bar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        gap: 40px;
+        padding: 10px;
+        border-radius: 0;
+        pointer-events: auto;
+    }
+
+    .stat-box {
+        flex-direction: column;
+    }
+
+    #mobile-controls {
+        flex: 1;
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 20px;
+        margin-top: 0;
+        width: 100%;
+        pointer-events: none;
+    }
+
+    .dpad {
+        pointer-events: auto;
+    }
+
+    .actions {
+        pointer-events: auto;
+    }
+
+    #game-wrapper {
+        flex: 1;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+    }
+
+    #player-status {
+        position: absolute;
+        bottom: auto;
+        top: 60px;
+        left: 20px;
+    }
+}
