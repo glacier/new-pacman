@@ -16,8 +16,13 @@ class MockGain {
     connect = vi.fn();
 }
 
+class MockAudioBuffer {
+    constructor(public numberOfChannels: number, public length: number, public sampleRate: number) {}
+    getChannelData() { return new Float32Array(this.length); }
+}
+
 class MockBufferSource {
-    buffer: any = null;
+    buffer: MockAudioBuffer | null = null;
     connect = vi.fn();
     start = vi.fn();
     stop = vi.fn();
@@ -27,11 +32,6 @@ class MockBiquadFilter {
     type = '';
     frequency = { value: 0 };
     connect = vi.fn();
-}
-
-class MockAudioBuffer {
-    constructor(public numberOfChannels: number, public length: number, public sampleRate: number) {}
-    getChannelData() { return new Float32Array(this.length); }
 }
 
 class MockAudioContext {
