@@ -1,17 +1,30 @@
 import { physics } from '../engine/physics';
+import RBush from 'rbush';
+
+export interface WallItem {
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
+    body: Matter.Body;
+}
 
 export class Maze {
     public walls: Matter.Body[] = [];
+    public wallIndex: RBush<WallItem>;
     public mazeHealth: number = 100;
     private wallWidth: number = 40;
     private wallHeight: number = 40;
 
-    constructor() {}
+    constructor() {
+        this.wallIndex = new RBush<WallItem>();
+    }
 
     generateLevel(level: number) {
         // Clear existing walls
         this.walls.forEach(wall => physics.removeBody(wall));
         this.walls = [];
+        this.wallIndex.clear();
         
         // Define grid dimensions (must be odd for the wall-cell algorithm)
         // 960 / 40 = 24. We'll use 23 columns.
@@ -96,6 +109,8 @@ export class Maze {
         const offsetX = (960 - (cols * 40)) / 2;
         const offsetY = (640 - (rows * 40)) / 2;
 
+        const wallItems: WallItem[] = [];
+
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
                 if (grid[r][c]) {
@@ -115,9 +130,18 @@ export class Maze {
                         }
                     } as Matter.IChamferableBodyDefinition);
                     this.walls.push(wall);
+                    wallItems.push({
+                        minX: wall.bounds.min.x,
+                        minY: wall.bounds.min.y,
+                        maxX: wall.bounds.max.x,
+                        maxY: wall.bounds.max.y,
+                        body: wall
+                    });
                 }
             }
         }
+
+        this.wallIndex.load(wallItems);
 
         this.mazeHealth = 100;
         this.updateUI();
