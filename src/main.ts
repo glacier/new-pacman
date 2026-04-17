@@ -153,10 +153,18 @@ class GameEngine {
     private setupResponsiveScaling() {
         const resize = () => {
             const container = document.getElementById('game-container');
-            if (!container) return;
-            const scaleX = window.innerWidth / 960;
-            const scaleY = window.innerHeight / 640;
+            const wrapper = document.getElementById('game-wrapper');
+            if (!container || !wrapper) return;
+
+            // Measure the available space in the wrapper
+            const rect = wrapper.getBoundingClientRect();
+            const availableWidth = rect.width;
+            const availableHeight = rect.height;
+
+            const scaleX = availableWidth / 960;
+            const scaleY = availableHeight / 640;
             const scale = Math.min(scaleX, scaleY, 1);
+
             container.style.transformOrigin = 'center center';
             if (scale < 1) {
                 container.style.transform = `scale(${scale})`;
