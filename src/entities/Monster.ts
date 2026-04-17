@@ -2,6 +2,7 @@ import { Body, Vector } from 'matter-js';
 import { physics } from '../engine/physics';
 import { sound } from '../audio/SoundManager';
 import { Maze } from '../world/Maze';
+import knn from 'rbush-knn';
 
 export class Monster {
     public body: Body;
@@ -47,12 +48,24 @@ export class Monster {
 
         this.isTouchingWall = false;
 
-        this.maze.walls.forEach(wall => {
-            const dist = Vector.magnitude(Vector.sub(this.body.position, wall.position));
-            if (dist < 40) {
+        const bounds = {
+            minX: this.body.position.x - 40,
+            minY: this.body.position.y - 40,
+            maxX: this.body.position.x + 40,
+            maxY: this.body.position.y + 40
+        };
+
+        const nearbyWalls = this.maze.wallIndex.search(bounds);
+
+        for (let i = 0; i < nearbyWalls.length; i++) {
+            const wall = nearbyWalls[i].body;
+            const dx = this.body.position.x - wall.position.x;
+            const dy = this.body.position.y - wall.position.y;
+            if (dx * dx + dy * dy < 1600) { // 40^2
                 this.isTouchingWall = true;
+                break;
             }
-        });
+        }
 
         if (this.smashSoundCooldown > 0) this.smashSoundCooldown--;
 
@@ -77,8 +90,12 @@ export class Monster {
 
             if (Math.random() < 0.005) {
                 this.findNearestWall();
-                if (this.targetWall && Vector.magnitude(Vector.sub(this.body.position, this.targetWall.position)) < 50) {
-                    this.state = 'SMASHING';
+                if (this.targetWall) {
+                    const dx = this.body.position.x - this.targetWall.position.x;
+                    const dy = this.body.position.y - this.targetWall.position.y;
+                    if (dx * dx + dy * dy < 2500) { // 50^2
+                        this.state = 'SMASHING';
+                    }
                 }
             }
 
@@ -135,18 +152,12 @@ export class Monster {
     }
 
     findNearestWall() {
-        let minDist = Infinity;
-        let nearest: Body | null = null;
-
-        this.maze.walls.forEach((wall: Matter.Body) => {
-            const dist = Math.hypot(wall.position.x - this.body.position.x, wall.position.y - this.body.position.y);
-            if (dist < minDist) {
-                minDist = dist;
-                nearest = wall;
-            }
-        });
-
-        this.targetWall = nearest;
+        const results = knn(this.maze.wallIndex, this.body.position.x, this.body.position.y, 1);
+        if (results && results.length > 0) {
+            this.targetWall = results[0].body;
+        } else {
+            this.targetWall = null;
+        }
     }
 
     smash() {

@@ -1,0 +1,3 @@
+## 2024-05-24 - Spatial Indexing over Vector Distance Checks
+**Learning:** During game loop updates, performing O(N) array loops to check distances against every static object (like walls) creates significant CPU overhead, especially when combined with object allocation from calculating magnitude and vector subtractions (e.g. `Vector.magnitude(Vector.sub(a, b))`).
+**Action:** Use an established spatial index like an R-tree (`rbush`) and its nearest neighbor extension (`rbush-knn`). This reduces proximity checks to O(log N) and eliminates unnecessary object allocations. Also, use squared distance (`dx*dx + dy*dy`) when comparing simple bounds instead of square root operations like `Math.hypot`.
